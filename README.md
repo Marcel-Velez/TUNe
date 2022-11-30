@@ -98,7 +98,7 @@ python3 clmr_linear_evaluation.py --checkpoint_path ./runs/lightning_logs/XXX/ch
 ```
 
 # 2. Probing like Jukemir
- This section explains how the repository of [Castellon et al.](https://github.com/p-lambda/jukemir) can be used on CLMR trained models
+ This section explains how the repository of [Castellon et al. (2021)](https://github.com/p-lambda/jukemir) can be used on CLMR trained models
  The code has been slightly altered and combined from the original repository. All these steps are 
 executable on windows, mac, and linux.
 
@@ -132,7 +132,7 @@ MagnaTagATune and GTZAN around 2-3 hours.
 
    ## 2.3 Run probe sweep
 This is the sequential training of the probes, the original authors also offer a parallel way of training on their 
-repository. The 'jukemir_train_probes.py' first creates configurations for every dataset according to [Castellon et al.]() 
+repository. The 'jukemir_train_probes.py' first creates configurations for every dataset according to [Castellon et al. (2021)](https://github.com/p-lambda/jukemir) 
 probe parameter configuration. Next every probe is trained for every dataset (216 probes per dataset).
 ```python
 # run the probe training script
