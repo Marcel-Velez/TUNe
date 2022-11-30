@@ -38,6 +38,7 @@ from .additional_experiments.tune_5_tail_xl import Tune5TailXL
 from .additional_experiments.tune_vanilla_xs import TuneVanillaXS
 
 # evaluating different latent representation sizes with same parameter contraint (see section ~XX)
+from .representation_size_experiments.tune_5_tail_32 import Tune5Tail32
 from .representation_size_experiments.tune_5_tail_64 import Tune5Tail64
 from .representation_size_experiments.tune_5_tail_128 import Tune5Tail128
 from .representation_size_experiments.tune_5_tail_256 import Tune5Tail256

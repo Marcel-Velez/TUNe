@@ -150,7 +150,13 @@ class ProbeExperiment:
         self.summarize_frequency = summarize_frequency
         self.datasets_root_dir = datasets_root_dir
         self.representations_root_dir = representations_root_dir
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # if torch.cuda.is_available():
+        #     self.device = torch.device("cuda")
+        # elif torch.backends.mps.is_available():
+        #     self.device = torch.device("mps")
+        # else:
+        self.device = torch.device("cpu")
+
         if self.probe is not None:
             self.probe.to(self.device)
 
@@ -334,7 +340,7 @@ class ProbeExperiment:
                         early_stopping_boredom = 0
                         # NOTE: This is just an ignorant way to copy the state dict
                         # TODO: Reduce ignorance?
-                        with open(f"./media/{self.cfg['dataset']}-{self.cfg['representation']}-test_probe.pt", 'wb') as f: #tempfile.NamedTemporaryFile(suffix=".pt") as f:
+                        with open(f"./probe_dicts/{self.cfg['dataset']}-{self.cfg['representation']}-test_probe.pt", 'wb') as f: #tempfile.NamedTemporaryFile(suffix=".pt") as f:
                             torch.save(self.probe.state_dict(), f.name)
                             early_stopping_state_dict = torch.load(f.name)
                     else:

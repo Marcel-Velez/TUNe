@@ -3,12 +3,10 @@
 
 
 import argparse
-from gc import callbacks
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pytorch_lightning import Trainer
-# from pytorch_lightning.loggers import TensorBoardLogger
-from pytorch_lightning.loggers import WandbLogger  # newline 1
+from pytorch_lightning.loggers import WandbLogger
 from torch.utils.data import DataLoader
 
 # Audio Augmentations
@@ -21,21 +19,23 @@ from torchaudio_augmentations import (
     Gain,
     HighLowPass,
     Delay,
-    # PitchShift,
-    # Reverb,
+    PitchShift,
+    Reverb,
 )
 
 from clmr.data import ContrastiveDataset
 from clmr.datasets import get_dataset
-from clmr.evaluation import evaluate
 
 from clmr.modules import ContrastiveLearning, SupervisedLearning
-from clmr_utils import yaml_config_hook
+from clmr.clmr_utils import yaml_config_hook
 
 from models import *
-
+import torch
 
 if __name__ == "__main__":
+
+    torch.multiprocessing.set_sharing_strategy('file_system')
+    torch.multiprocessing.set_start_method('spawn')
 
     parser = argparse.ArgumentParser(description="CLMR")
     parser = Trainer.add_argparse_args(parser)
@@ -63,18 +63,18 @@ if __name__ == "__main__":
                 [HighLowPass(sample_rate=args.sample_rate)], p=args.transforms_filters
             ),
             RandomApply([Delay(sample_rate=args.sample_rate)], p=args.transforms_delay),
-            # RandomApply(
-            #     # [
-            #     #     PitchShift(
-            #     #         n_samples=args.audio_length,
-            #     #         sample_rate=args.sample_rate,
-            #     #     )
-            #     # ],
-            #     p=args.transforms_pitch,
-            # ),
-            # RandomApply(
-            #     [Reverb(sample_rate=args.sample_rate)], p=args.transforms_reverb
-            # ),
+            RandomApply(
+                [
+                    PitchShift(
+                        n_samples=args.audio_length,
+                        sample_rate=args.sample_rate,
+                    )
+                ],
+                p=args.transforms_pitch,
+            ),
+            RandomApply(
+                [Reverb(sample_rate=args.sample_rate)], p=args.transforms_reverb
+            ),
         ]
         num_augmented_samples = 2
 
@@ -86,7 +86,7 @@ if __name__ == "__main__":
         train_dataset = get_dataset(args.dataset, args.dataset_dir, subset="train")
     else:
         train_dataset = get_dataset(args.dataset, args.dataset_dir, subset=None)
-    # valid_dataset = get_dataset(args.dataset, args.dataset_dir, subset="valid")
+
     contrastive_train_dataset = ContrastiveDataset(
         train_dataset,
         input_shape=(1, args.audio_length),
@@ -95,14 +95,6 @@ if __name__ == "__main__":
         ),
     )
 
-    # contrastive_valid_dataset = ContrastiveDataset(
-    #     valid_dataset,
-    #     input_shape=(1, args.audio_length),
-    #     transform=ComposeMany(
-    #         train_transform, num_augmented_samples=num_augmented_samples
-    #     ),
-    # )
-
     train_loader = DataLoader(
         contrastive_train_dataset,
         batch_size=args.batch_size,
@@ -110,14 +102,6 @@ if __name__ == "__main__":
         drop_last=True,
         shuffle=True,
     )
-
-    # valid_loader = DataLoader(
-    #     contrastive_valid_dataset,
-    #     batch_size=args.batch_size,
-    #     num_workers=args.workers,
-    #     drop_last=True,
-    #     shuffle=False,
-    # )
 
     # ------------
     # encoder
@@ -140,7 +124,6 @@ if __name__ == "__main__":
     else:
         module = ContrastiveLearning(args, encoder)
 
-    # logger = TensorBoardLogger("runs", name="CLMRv2-{}".format(args.dataset))
     logger = WandbLogger(save_dir="runs", name="ISMIR-{}-{}".format(args.dataset, args.model))
     if args.checkpoint_path:
         trainer = Trainer.from_argparse_args(
@@ -152,7 +135,6 @@ if __name__ == "__main__":
             check_val_every_n_epoch=1,
             accelerator=args.accelerator,
         )
-        # trainer.fit(module, train_loader, valid_loader, ckpt_path=args.checkpoint_path)
         trainer.fit(module, train_loader, ckpt_path=args.checkpoint_path)
     else:
         # ------------
@@ -173,6 +155,5 @@ if __name__ == "__main__":
             check_val_every_n_epoch=1,
             accelerator=args.accelerator,
         )
-        # trainer.fit(module, train_loader, valid_loader)
         trainer.fit(module, train_loader)
     trainer.save_checkpoint(filepath="./checkpoints/dataset_{}_model_{}_epoch_{}.ckpt".format(module.hparams.dataset, module.hparams.model, module.current_epoch))

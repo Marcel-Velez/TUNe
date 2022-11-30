@@ -1,6 +1,6 @@
-for DATASET in gtzan_ff giantsteps_clips magnatagatune emomusic
+for DATASET in giantsteps_clips magnatagatune emomusic gtzan_ff
 do
-	for REPRESENTATION in chroma mfcc choi musicnn clmr jukebox
+	for REPRESENTATION in TunePlus  # Tune5Tail
 	do
 		docker exec -it jukemir \
 			python -m jukemir.probe.aggregate \

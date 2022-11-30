@@ -1,6 +1,6 @@
 # infra options
-# gpus: 2
-# accelerator: "dp" # use ddp for gpus > 1. Also see PyTorch Lightning documentation on distributed training.
+# gpus: 1
+# accelerator: "mps" # dp original, use ddp for gpus > 1. Also see PyTorch Lightning documentation on distributed training.
 workers: 0 # I recommend tuning this parameter for faster data augmentation processing
 dataset_dir: "./data"
 
@@ -43,5 +43,5 @@ transforms_pitch: 0.6
 transforms_reverb: 0.6
 
 # own adition
-model: "TunePlus"
+model: "Tune5Tail32"
 eval_layer: 0

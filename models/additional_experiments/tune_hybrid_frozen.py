@@ -3,7 +3,7 @@ import torch.nn as nn
 
 from .. import ConvBlock, SampleCNN, Identity
 
-from clmr_utils import load_encoder_checkpoint
+from clmr.clmr_utils import load_encoder_checkpoint
 ENCODER_CHECKPOINT = "./clmr/models/model_weight/clmr_checkpoint_10000.pt"
 N_CLASSES = 50
 REPRESENTATION_SIZE = 512
