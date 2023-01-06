@@ -3,6 +3,8 @@
 This repository contains the code to reproduce the experiments from the paper ['Tailed U-Net: Multi-Scale Music Representation Learning'](https://ismir2022program.ismir.net/poster_109.html) 
 , which is a mix of [Spijkervets & Burgoyne (2021)](https://github.com/Spijkervet/CLMR) and [Castellon et al. (2021)](https://github.com/p-lambda/jukemir) repositories.
 
+[The weights for the trained models are available at here](https://drive.google.com/drive/folders/1MZZs-CRVibaLuW_zmV9KB8sPy495qERJ)
+
 The TUNe architecture:
 
 ![tailed u net aarcheticture](media/Poster_TUNe_hd.png "Tailed U-Net")
